@@ -78,7 +78,7 @@ SERVICES = {
     }
 }
 
-class ServicePwn:
+class kameSifter:
     def __init__(self, verbose=False):
         self.verbose = verbose
         self.results = []
@@ -240,7 +240,7 @@ class ServicePwn:
     def print_summary(self):
         """Print clean summary of results"""
         print(f"\n{Colors.BOLD}{'='*70}{Colors.RESET}")
-        print(f"{Colors.BOLD}{Colors.CYAN}SERVICEPWN RESULTS SUMMARY{Colors.RESET}")
+        print(f"{Colors.BOLD}{Colors.CYAN}kameSifter RESULTS SUMMARY{Colors.RESET}")
         print(f"{Colors.BOLD}{'='*70}{Colors.RESET}\n")
         
         pwned_count = 0
@@ -372,8 +372,8 @@ Examples:
     
     print(banner)
     
-    # Initialize ServicePwn
-    spwn = ServicePwn(verbose=args.verbose)
+    # Initialize kameSifter
+    spwn = kameSifter(verbose=args.verbose)
     
     # Check if netexec is installed
     if not spwn.check_tool_installed('netexec'):
