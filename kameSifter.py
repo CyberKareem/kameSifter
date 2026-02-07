@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 kameSifter - Credential Validation Aggregator for Penetration Testing
-Author: CyberKareem, github.com/cyberkareem
+Author: Security Researcher
 License: MIT
 Description: Clean interface for testing credentials against SMB, LDAP, WMI, RDP, SSH, and more
 WARNING: For authorized penetration testing only. Unauthorized access is illegal.
@@ -117,23 +117,27 @@ class kameSifter:
             cmd.extend(['-H', hash_file])
             if user_file:
                 cmd.extend(['-u', user_file])
-            elif username:
+            elif username is not None:  # Allow empty string
                 cmd.extend(['-u', username])
         elif user_file and password_file:
             # User file + password file
             cmd.extend(['-u', user_file, '-p', password_file])
-        elif user_file and password:
-            # User file + single password
+        elif user_file and password is not None:  # Allow empty password
+            # User file + single password (including blank)
             cmd.extend(['-u', user_file, '-p', password])
-        elif username and password_file:
-            # Single user + password file
+        elif username is not None and password_file:  # Allow empty username
+            # Single user (including blank) + password file
             cmd.extend(['-u', username, '-p', password_file])
-        elif username and password:
-            # Single user + single password
+        elif username is not None and password is not None:  # Allow both empty
+            # Single user + single password (handles blank/null sessions)
             cmd.extend(['-u', username, '-p', password])
+        elif username is not None:  # Just username, no password
+            cmd.extend(['-u', username, '--no-pass'])
+        elif password is not None:  # Just password, no username
+            cmd.extend(['-p', password])
         else:
-            # Try to enumerate without credentials
-            cmd.append('--no-auth')
+            # No credentials - try anonymous
+            pass  # Some tools will attempt anonymous by default
         
         return cmd
     
@@ -318,6 +322,15 @@ Examples:
   # Test hash against target
   kameSifter.py -t 192.168.1.10 -s smb -u administrator -H aad3b435b51404eeaad3b435b51404ee:8846f7eaee8fb117ad06bdd830b7586c
   
+  # Test blank password (common misconfig)
+  kameSifter.py -t 192.168.1.10 -s smb -u administrator --null-pass
+  
+  # Test null session / anonymous access
+  kameSifter.py -t 192.168.1.10 -s smb,ftp --anonymous
+  
+  # Test with explicit empty string
+  kameSifter.py -t 192.168.1.10 -s smb -u administrator -p ""
+  
   # Test all common services
   kameSifter.py -t 192.168.1.10 --all -u admin -p Password123
   
@@ -340,16 +353,22 @@ Examples:
     # Authentication - Username
     user_group = parser.add_mutually_exclusive_group()
     user_group.add_argument('-u', '--username',
-                           help='Single username')
+                           help='Single username (use empty string "" for blank username)')
     user_group.add_argument('-U', '--user-file', type=validate_file,
                            help='File containing usernames')
+    user_group.add_argument('--null-user', action='store_true',
+                           help='Test with null/blank username')
     
     # Authentication - Password
     pass_group = parser.add_mutually_exclusive_group()
     pass_group.add_argument('-p', '--password',
-                           help='Single password')
+                           help='Single password (use empty string "" for blank password)')
     pass_group.add_argument('-P', '--password-file', type=validate_file,
                            help='File containing passwords')
+    pass_group.add_argument('--null-pass', action='store_true',
+                           help='Test with null/blank password')
+    pass_group.add_argument('--anonymous', action='store_true',
+                           help='Test anonymous access (FTP, SMB null sessions, etc.)')
     
     # Authentication - Hash
     hash_group = parser.add_mutually_exclusive_group()
@@ -404,6 +423,20 @@ Examples:
         'hash_file': args.hash_file,
         'domain': args.domain
     }
+    
+    # Handle null/anonymous flags
+    if args.null_user:
+        cred_args['username'] = ''
+        print(f"{Colors.YELLOW}[*] Using null/blank username{Colors.RESET}")
+    
+    if args.null_pass:
+        cred_args['password'] = ''
+        print(f"{Colors.YELLOW}[*] Using null/blank password{Colors.RESET}")
+    
+    if args.anonymous:
+        cred_args['username'] = ''
+        cred_args['password'] = ''
+        print(f"{Colors.YELLOW}[*] Testing anonymous access (null session){Colors.RESET}")
     
     # Run tests
     print(f"{Colors.CYAN}[*] Target: {args.target}{Colors.RESET}")
