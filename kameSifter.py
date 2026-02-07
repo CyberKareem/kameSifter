@@ -297,7 +297,7 @@ def main():
     banner = f"""
 {Colors.CYAN}{Colors.BOLD}
 ╔═══════════════════════════════════════════════════════════╗
-║              ServicePwn v1.0                              ║
+║              kameSifter v1.0                              ║
 ║      Credential Validation Aggregator                     ║
 ║      For Authorized Penetration Testing Only              ║
 ╚═══════════════════════════════════════════════════════════╝
@@ -310,19 +310,19 @@ def main():
         epilog="""
 Examples:
   # Test single credential against SMB
-  servicepwn.py -t 192.168.1.10 -s smb -u admin -p Password123
+  kameSifter.py -t 192.168.1.10 -s smb -u admin -p Password123
   
   # Test user list against password list on multiple services
-  servicepwn.py -t 192.168.1.10 -s smb,rdp,winrm -U users.txt -P passwords.txt
+  kameSifter.py -t 192.168.1.10 -s smb,rdp,winrm -U users.txt -P passwords.txt
   
   # Test hash against target
-  servicepwn.py -t 192.168.1.10 -s smb -u administrator -H aad3b435b51404eeaad3b435b51404ee:8846f7eaee8fb117ad06bdd830b7586c
+  kameSifter.py -t 192.168.1.10 -s smb -u administrator -H aad3b435b51404eeaad3b435b51404ee:8846f7eaee8fb117ad06bdd830b7586c
   
   # Test all common services
-  servicepwn.py -t 192.168.1.10 --all -u admin -p Password123
+  kameSifter.py -t 192.168.1.10 --all -u admin -p Password123
   
   # Export results to JSON
-  servicepwn.py -t 192.168.1.10 -s smb -u admin -p Password123 -o results.json
+  kameSifter.py -t 192.168.1.10 -s smb -u admin -p Password123 -o results.json
         """
     )
     
