@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 kameSifter - Credential Validation Aggregator for Penetration Testing
-Author: Security Researcher
+Author: CyberKareem, github.com/cyberkareem
 License: MIT
 Description: Clean interface for testing credentials against SMB, LDAP, WMI, RDP, SSH, and more
 WARNING: For authorized penetration testing only. Unauthorized access is illegal.
